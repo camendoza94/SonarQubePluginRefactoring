@@ -1,6 +1,6 @@
 package rules;
 
-import org.sonar.api.internal.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
