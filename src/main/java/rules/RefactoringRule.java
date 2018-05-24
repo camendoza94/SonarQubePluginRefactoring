@@ -11,6 +11,8 @@ import java.util.List;
 @Rule(key = "RefactoringRule")
 public class RefactoringRule extends IssuableSubscriptionVisitor {
 
+    int Id = 1;
+
     @Override
     public List<Kind> nodesToVisit() {
         return ImmutableList.of(Kind.TRIVIA);
@@ -20,9 +22,13 @@ public class RefactoringRule extends IssuableSubscriptionVisitor {
     public void visitTrivia(SyntaxTrivia syntaxTrivia) {
         super.visitTrivia(syntaxTrivia);
         String comment = syntaxTrivia.comment();
-        if (comment.contains("TODO R")) {
+        if (comment.contains("TODO R" + this.Id + ":")) {
             addIssue(syntaxTrivia.startLine(), "Architectural bad smell");
         }
 
+    }
+
+    synchronized void setId(int i) {
+        this.Id = i;
     }
 }

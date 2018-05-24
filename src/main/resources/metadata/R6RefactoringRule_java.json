@@ -1,0 +1,13 @@
+{
+  "title": "Check toEntity implementation in DTO.",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "refactoring"
+  ],
+  "defaultSeverity": "Minor"
+}

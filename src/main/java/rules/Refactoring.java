@@ -2,7 +2,7 @@ package rules;
 
 // Noncompliant@+1
 //TODO R1: Revisar.
-public class Refactoring {
+class Refactoring {
     Refactoring(Refactoring mc) {
     }
 
@@ -26,7 +26,7 @@ public class Refactoring {
     }
 
     // Noncompliant@+1
-    //TODO R2: revisar
+    //TODO R1: revisar
     int foo6(int value, String name) {
         return 0;
     }

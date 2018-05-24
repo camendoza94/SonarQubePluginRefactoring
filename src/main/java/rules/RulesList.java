@@ -16,7 +16,21 @@ public final class RulesList {
 
     static List<Class<? extends JavaCheck>> getJavaChecks() {
         return ImmutableList.<Class<? extends JavaCheck>>builder()
-                .add(RefactoringRule.class)
+                .add(R1RefactoringRule.class)
+                .add(R2RefactoringRule.class)
+                .add(R3RefactoringRule.class)
+                .add(R4RefactoringRule.class)
+                .add(R5RefactoringRule.class)
+                .add(R6RefactoringRule.class)
+                .add(R7RefactoringRule.class)
+                .add(R8RefactoringRule.class)
+                .add(R9RefactoringRule.class)
+                .add(R10RefactoringRule.class)
+                .add(R11RefactoringRule.class)
+                .add(R12RefactoringRule.class)
+                .add(R13RefactoringRule.class)
+                .add(R14RefactoringRule.class)
+                .add(R15RefactoringRule.class)
                 .build();
     }
 

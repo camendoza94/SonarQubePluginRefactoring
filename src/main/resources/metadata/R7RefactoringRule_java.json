@@ -1,0 +1,13 @@
+{
+  "title": "Fields on DetailDTOs must be of type DTO or List.",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "refactoring"
+  ],
+  "defaultSeverity": "Minor"
+}

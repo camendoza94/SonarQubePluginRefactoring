@@ -1,0 +1,13 @@
+{
+  "title": "Add missing Produces annotation on Resource.",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "refactoring"
+  ],
+  "defaultSeverity": "Minor"
+}

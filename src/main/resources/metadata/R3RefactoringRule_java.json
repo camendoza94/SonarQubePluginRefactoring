@@ -1,0 +1,13 @@
+{
+  "title": "Remove or edit no-serializable fields.",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "refactoring"
+  ],
+  "defaultSeverity": "Minor"
+}

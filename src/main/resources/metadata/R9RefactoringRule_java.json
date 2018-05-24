@@ -1,5 +1,5 @@
 {
-  "title": "Architectural bad smell according to checklist",
+  "title": "Check toEntity implementation in DetailDTO.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
