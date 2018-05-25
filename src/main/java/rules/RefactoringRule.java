@@ -11,7 +11,7 @@ import java.util.List;
 @Rule(key = "RefactoringRule")
 public class RefactoringRule extends IssuableSubscriptionVisitor {
 
-    int Id = 1;
+    private int Id;
 
     @Override
     public List<Kind> nodesToVisit() {

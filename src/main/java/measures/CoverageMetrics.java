@@ -1,4 +1,6 @@
-package plugin;/*
+package measures;
+
+/*
  * Example Plugin for SonarQube
  * Copyright (C) 2009-2016 SonarSource SA
  * mailto:contact AT sonarsource DOT com
@@ -18,21 +20,27 @@ package plugin;/*
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import measures.CoverageComputer;
-import measures.CoverageMetrics;
-import org.sonar.api.Plugin;
-import rules.JavaFileCheckRegistrar;
-import rules.JavaRulesDefinition;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * This class is the entry point for all extensions. It is referenced in pom.xml.
- */
-public class JavaPlugin implements Plugin {
+import org.sonar.api.measures.CoreMetrics;
+import org.sonar.api.measures.Metric;
+import org.sonar.api.measures.Metrics;
+
+import static java.util.Arrays.asList;
+
+public class CoverageMetrics implements Metrics {
+
+    public static final Metric<Integer> ARCHITECTURAL_BAD_SMELLS = new Metric.Builder("refactoring", "Architectural bad smells", Metric.ValueType.INT)
+            .setDescription("Number of architectural bad smells detected.")
+            .setDirection(Metric.DIRECTION_BETTER)
+            .setQualitative(false)
+            .setDomain(CoreMetrics.DOMAIN_MAINTAINABILITY)
+            .create();
 
     @Override
-    public void define(Context context) {
-        context.addExtension(JavaRulesDefinition.class);
-        context.addExtension(JavaFileCheckRegistrar.class);
-        context.addExtensions(CoverageComputer.class, CoverageMetrics.class);
+    public List<Metric> getMetrics() {
+        return Collections.singletonList(ARCHITECTURAL_BAD_SMELLS);
     }
 }
+
