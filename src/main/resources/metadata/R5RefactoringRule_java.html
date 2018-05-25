@@ -1,9 +1,16 @@
-<p>This rule detects methods with same type as argument</p>
+<p>DTOs must have a constructor with an Entity as parameter.</p>
+<p>It must check if the entity object is not <code>null</code> and then copy its values to the DTO</p>
 <h2>Noncompliant Code Example</h2>
-<pre>
-TO DO
+<pre>public EditorialDTO(EditorialEntity editorial) {
+    this.id = editorial.getId();
+    this.name = editorial.getName();
+}
 </pre>
 <h2>Compliant Solution</h2>
-<pre>
-TO DO
+<pre>public EditorialDTO(EditorialEntity editorial) {
+    if(editorial != null) {
+        this.id = editorial.getId();
+        this.name = editorial.getName();
+    }
+}
 </pre>

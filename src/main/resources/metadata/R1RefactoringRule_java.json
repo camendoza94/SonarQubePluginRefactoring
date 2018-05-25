@@ -1,5 +1,5 @@
 {
-  "title": "Implement Serializable in this DTO.",
+  "title": "DTOs must implement Serializable.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

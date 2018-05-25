@@ -1,5 +1,5 @@
 {
-  "title": "Add empty constructor for serializing.",
+  "title": "DTOs must have an empty constructor for serializing.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

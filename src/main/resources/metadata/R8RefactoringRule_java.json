@@ -1,5 +1,5 @@
 {
-  "title": "Check constructor from Entity implementation in DetailDTO.",
+  "title": "DetailDTOs must have a constructor with an Entity as parameter.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

@@ -1,5 +1,5 @@
 {
-  "title": "Add missing persistence injection on Logic.",
+  "title": "Logic classes must have a persistence injection as field.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

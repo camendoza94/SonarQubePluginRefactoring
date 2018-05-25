@@ -1,9 +1,12 @@
-<p>This rule detects methods with same type as argument</p>
+<p>Logic classes must be annotated with Stataless annotation</p>
 <h2>Noncompliant Code Example</h2>
-<pre>
-TO DO
+<pre>public class AuthorLogic {
+    ...
+}
 </pre>
 <h2>Compliant Solution</h2>
-<pre>
-TO DO
+<pre>@Stateless
+public class AuthorLogic {
+    ...
+}
 </pre>

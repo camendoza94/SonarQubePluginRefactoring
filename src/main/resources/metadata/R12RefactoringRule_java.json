@@ -1,5 +1,5 @@
 {
-  "title": "Add missing Produces annotation on Resource.",
+  "title": "Resource classes must have a Produces annotation.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

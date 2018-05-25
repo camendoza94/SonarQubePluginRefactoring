@@ -1,9 +1,11 @@
-<p>This rule detects methods with same type as argument</p>
+<p>DTOS must implement Serializable interface to provide serializable features.</p>
 <h2>Noncompliant Code Example</h2>
-<pre>
-TO DO
+<pre>public class AuthorDTO {
+    ...
+}
 </pre>
 <h2>Compliant Solution</h2>
-<pre>
-TO DO
+<pre>public class AuthorDTO implements Serializable {
+    ...
+}
 </pre>

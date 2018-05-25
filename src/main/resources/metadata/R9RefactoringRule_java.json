@@ -1,5 +1,5 @@
 {
-  "title": "Check toEntity implementation in DetailDTO.",
+  "title": "toEntity methods in DetailDTOs must convert the object to an Entity.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

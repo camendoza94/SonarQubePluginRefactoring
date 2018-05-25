@@ -1,5 +1,5 @@
 {
-  "title": "Remove or edit no-serializable fields.",
+  "title": "DTOS must have only serializable fields.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

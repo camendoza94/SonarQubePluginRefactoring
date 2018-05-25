@@ -1,5 +1,5 @@
 {
-  "title": "Check toEntity implementation in DTO.",
+  "title": "toEntity methods in DTOs must convert the object to an Entity.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

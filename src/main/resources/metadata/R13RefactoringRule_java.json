@@ -1,5 +1,5 @@
 {
-  "title": "Add missing logic injection on Resource.",
+  "title": "Resource classes must have a logic injection as field.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

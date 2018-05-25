@@ -1,5 +1,5 @@
 {
-  "title": "Add missing Stateless annotation on Logic.",
+  "title": "Logic layer classes must be annotated with Stataless.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

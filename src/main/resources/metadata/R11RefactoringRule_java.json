@@ -1,5 +1,5 @@
 {
-  "title": "Add missing Consumes annotation on Resource.",
+  "title": "Resource classes must have a Consumes annotation.",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
