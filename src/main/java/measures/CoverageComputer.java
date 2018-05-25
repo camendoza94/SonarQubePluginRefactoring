@@ -2,7 +2,6 @@ package measures;
 
 import org.sonar.api.ce.measure.Issue;
 import org.sonar.api.ce.measure.Measure;
-import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.ce.measure.MeasureComputer;
 
 import java.util.List;
@@ -29,7 +28,6 @@ public class CoverageComputer implements MeasureComputer {
                 if (i.ruleKey().rule().contains("RefactoringRule"))
                     sum += Objects.requireNonNull(i.effort()).toMinutes();
             }
-            long ratio = sum/Objects.requireNonNull(context.getMeasure(CoreMetrics.getMetric(CoreMetrics.NCLOC_KEY).key())).getIntValue();
             context.addMeasure(ARCHITECTURAL_TECHNICAL_DEBT.key(), sum);
             return;
         }

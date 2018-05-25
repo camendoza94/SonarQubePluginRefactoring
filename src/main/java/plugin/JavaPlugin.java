@@ -23,6 +23,7 @@ import measures.CoverageMetrics;
 import org.sonar.api.Plugin;
 import rules.JavaFileCheckRegistrar;
 import rules.JavaRulesDefinition;
+import web.PluginPageDefinition;
 
 /**
  * This class is the entry point for all extensions. It is referenced in pom.xml.
@@ -34,5 +35,6 @@ public class JavaPlugin implements Plugin {
         context.addExtension(JavaRulesDefinition.class);
         context.addExtension(JavaFileCheckRegistrar.class);
         context.addExtensions(CoverageComputer.class, CoverageMetrics.class);
+        context.addExtension(PluginPageDefinition.class);
     }
 }
