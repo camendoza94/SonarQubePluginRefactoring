@@ -20,27 +20,33 @@ package measures;
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import java.util.Collections;
-import java.util.List;
-
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metrics;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
 public class CoverageMetrics implements Metrics {
 
-    public static final Metric<Integer> ARCHITECTURAL_BAD_SMELLS = new Metric.Builder("refactoring", "Architectural bad smells", Metric.ValueType.INT)
-            .setDescription("Number of architectural bad smells detected.")
-            .setDirection(Metric.DIRECTION_BETTER)
+    static final Metric<Integer> ARCHITECTURAL_TECHNICAL_DEBT = new Metric.Builder("arch-debt", "Architectural debt", Metric.ValueType.WORK_DUR)
+            .setDescription("Technical debt for architectural bad smells.")
+            .setDirection(Metric.DIRECTION_WORST)
+            .setQualitative(false)
+            .setDomain(CoreMetrics.DOMAIN_MAINTAINABILITY)
+            .create();
+
+    static final Metric<Integer> ARCHITECTURAL_TECHNICAL_DEBT_RATIO = new Metric.Builder("arch-deb-ratio", "Architectural debt ratio", Metric.ValueType.FLOAT)
+            .setDescription("Technical debt ratio for architectural bad smells.")
+            .setDirection(Metric.DIRECTION_WORST)
             .setQualitative(false)
             .setDomain(CoreMetrics.DOMAIN_MAINTAINABILITY)
             .create();
 
     @Override
     public List<Metric> getMetrics() {
-        return Collections.singletonList(ARCHITECTURAL_BAD_SMELLS);
+        return asList(ARCHITECTURAL_TECHNICAL_DEBT, ARCHITECTURAL_TECHNICAL_DEBT_RATIO);
     }
 }
 
