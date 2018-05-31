@@ -11,13 +11,9 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import java.io.*;
-import java.net.URI;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 
@@ -81,9 +77,15 @@ public class RefactoringRule extends IssuableSubscriptionVisitor {
                     .load();
             service.getClient().setOAuth2Token(dotenv.get(TOKEN));
             RepositoryId repo = new RepositoryId(userName, repoName);
+            List<Issue> issues = service.getIssues(repo, null);
+            String title = TITLES.get(this.Id) + " - " + context.getFile().getParentFile().getName()
+                    + "/" + context.getFile().getName();
+            for (Issue i : issues) {
+                if (i.getTitle().equals(title))
+                    return;
+            }
             Issue issue = new Issue();
-            issue.setTitle(TITLES.get(this.Id) + " - " + context.getFile().getParentFile().getName()
-                    + "/" + context.getFile().getName());
+            issue.setTitle(title);
             URL resource = RefactoringRule.class.getResource(RESOURCE_BASE_PATH + "/" + "R" + this.Id
                     + "RefactoringRule" + "_java.html");
             if (resource != null) {
