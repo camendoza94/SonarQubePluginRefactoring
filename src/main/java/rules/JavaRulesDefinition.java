@@ -48,7 +48,7 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 public class JavaRulesDefinition implements RulesDefinition {
 
     // don't change that because the path is hard coded in CheckVerifier
-    private static final String RESOURCE_BASE_PATH = "/metadata";
+    static final String RESOURCE_BASE_PATH = "/metadata";
 
     static final String REPOSITORY_KEY = "uniandes-java";
 
@@ -70,7 +70,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     }
 
     @VisibleForTesting
-    protected void newRule(Class<?> ruleClass, NewRepository repository) {
+    private void newRule(Class<?> ruleClass, NewRepository repository) {
 
         org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
         if (ruleAnnotation == null) {
@@ -127,7 +127,7 @@ public class JavaRulesDefinition implements RulesDefinition {
         }
     }
 
-    private static String readResource(URL resource) {
+    static String readResource(URL resource) {
         try {
             return Resources.toString(resource, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -153,7 +153,7 @@ public class JavaRulesDefinition implements RulesDefinition {
         String linearOffset;
         String linearFactor;
 
-        public DebtRemediationFunction remediationFunction(DebtRemediationFunctions drf) {
+        DebtRemediationFunction remediationFunction(DebtRemediationFunctions drf) {
             if (func.startsWith("Constant")) {
                 return drf.constantPerIssue(constantCost.replace("mn", "min"));
             }

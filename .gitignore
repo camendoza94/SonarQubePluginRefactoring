@@ -3,6 +3,7 @@ target/
 node_modules/
 package-lock.json
 dependency-reduced-pom.xml
+.env
 
 # ---- IntelliJ IDEA
 *.iws
