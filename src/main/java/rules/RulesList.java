@@ -31,6 +31,7 @@ public final class RulesList {
                 .add(R13RefactoringRule.class)
                 .add(R14RefactoringRule.class)
                 .add(R15RefactoringRule.class)
+                .add(R16RefactoringRule.class)
                 .build();
     }
 

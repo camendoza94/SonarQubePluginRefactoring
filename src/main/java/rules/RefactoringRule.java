@@ -42,6 +42,7 @@ public class RefactoringRule extends IssuableSubscriptionVisitor {
                     .put(13, "Add missing logic injection on Resource.")
                     .put(14, "Add missing Stateless annotation on Logic.")
                     .put(15, "Add missing persistence injection on Logic.")
+                    .put(16, "Add missing check for nullity and WebApplicationException.")
                     .build();
 
     @Override
