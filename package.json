@@ -79,5 +79,8 @@
       "<rootDir>/scripts",
       "<rootDir>/conf"
     ]
+  },
+  "dependencies": {
+    "http-proxy": "^1.17.0"
   }
 }

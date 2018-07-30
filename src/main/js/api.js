@@ -23,22 +23,27 @@ export function findIssuesStatistics(project) {
     });
 }
 
+
 export function findProjects() {
     return getJSON('/api/projects/search').then(function (response) {
         const numProjects = response.components.length;
         if (numProjects > 0) {
             let projectData = [];
-            for(let i = 0; i < numProjects; i++) {
-                findVersionsAndMeasures(response.components[i]).then(
-                    (response) => {
-                        projectData[i] = response;
-                    }
-                )
-            }
-            return projectData;
+            return (async function loop() {
+                for (let i = 0; i < numProjects; i++) {
+                    let project = response.components[i];
+                    let measures = await findVersionsAndMeasures(project);
+                    projectData[i] = {
+                        name: project.name,
+                        data: measures
+                    };
+                }
+                return projectData;
+            })();
         }
     });
 }
+
 export function findVersionsAndMeasures(project) {
 
     return getJSON('/api/project_analyses/search', {
