@@ -4,21 +4,21 @@
  * mailto:info AT sonarsource DOT com
  */
 import React from 'react';
-import {translate} from '../common/l10n.js'
-import {findProjects} from '../api.js'
-import {Line} from 'react-chartjs-2';
+import {findProjects, findIssuesStatistics} from '../api.js'
+import {Line, Doughnut} from 'react-chartjs-2';
 
 export default class VersionsMeasuresHistoryApp extends React.PureComponent {
 
     state = {
         options: {},
+        issues: {},
         data: []
     };
 
-    getRandomColor() {
+    static getRandomColor() {
         const letters = '0123456789ABCDEF'.split('');
         let color = '#';
-        for (let i = 0; i < 6; i++ ) {
+        for (let i = 0; i < 6; i++) {
             color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
@@ -49,7 +49,7 @@ export default class VersionsMeasuresHistoryApp extends React.PureComponent {
                 };
                 for (let i = 0; i < projectData.length; i++) {
                     console.log(projectData[i]);
-                    let color = this.getRandomColor();
+                    let color = VersionsMeasuresHistoryApp.getRandomColor();
                     data.datasets.push({
                         label: projectData[i].name,
                         fill: false,
@@ -80,13 +80,34 @@ export default class VersionsMeasuresHistoryApp extends React.PureComponent {
                     options: options
                 });
             }
-        )
+        );
+
+        findIssuesStatistics().then((issues) => {
+            const rules = issues.facets[0].values;
+            const labels = rules.map((issue) => issue.val);
+            const counts = rules.map((issue) => issue.count);
+            let backgroundColors = [];
+            for (let i = 0; i < rules.length; i++) {
+                backgroundColors.push(VersionsMeasuresHistoryApp.getRandomColor())
+            }
+            let stats = {
+                labels: labels,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: backgroundColors
+                }]
+            };
+            this.setState({
+                issues: stats
+            });
+        });
     }
 
     render() {
-        // Data Gathered: {JSON.stringify(this.state.data)}
         return (
             <div className="page page-limited">
+                <Doughnut data={this.state.issues}/>
+                <h1>Architectural debt in group assignments throughout the semester</h1>
                 <Line data={this.state.data} options={this.state.options}/>
             </div>
         );

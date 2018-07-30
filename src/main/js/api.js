@@ -5,21 +5,13 @@
  */
 import {getJSON} from 'sonar-request'; // see https://github.com/SonarSource/sonarqube/blob/master/server/sonar-web/src/main/js/app/utils/exposeLibraries.js
 
-export function findQualityProfilesStatistics(project) {
-    return getJSON('/api/qualityprofiles/search').then(function (response) {
-        return response.profiles.length;
-    });
-}
-
-export function findQualityQatesStatistics(project) {
-    return getJSON('/api/qualitygates/list').then(function (response) {
-        return response.qualitygates.length;
-    });
-}
-
 export function findIssuesStatistics(project) {
-    return getJSON('/api/issues/search').then(function (response) {
-        return response.total;
+    return getJSON('/api/issues/search', {
+        facets: 'rules',
+        tags:  'refactoring',
+        additionalFields: 'rules'
+    }).then(function (response) {
+        return response;
     });
 }
 
