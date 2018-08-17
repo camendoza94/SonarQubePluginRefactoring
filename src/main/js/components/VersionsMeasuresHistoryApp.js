@@ -4,15 +4,23 @@
  * mailto:info AT sonarsource DOT com
  */
 import React from 'react';
-import {findProjects, findIssuesStatistics} from '../api.js'
+import {findProjects, findIssuesStatistics, findProjectsNames} from '../api.js'
 import {Line, Doughnut} from 'react-chartjs-2';
+import {CSVLink} from 'react-csv';
+
+
+const headers = ['rule', 'number of issues'];
+const headersHistory = ['group', 'first assignment', 'second assignment', 'third assignment'];
 
 export default class VersionsMeasuresHistoryApp extends React.PureComponent {
 
     state = {
         options: {},
         issues: {},
-        data: []
+        data: [],
+        csvData: [],
+        csvHistory: [],
+        projectData: {}
     };
 
     static getRandomColor() {
@@ -36,7 +44,7 @@ export default class VersionsMeasuresHistoryApp extends React.PureComponent {
                         yAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: "Architectural debt (minutes)"
+                                labelString: 'Architectural debt (minutes)'
                             }
                         }],
                         xAxes: [{
@@ -47,9 +55,16 @@ export default class VersionsMeasuresHistoryApp extends React.PureComponent {
                         }]
                     }
                 };
+                let history = [];
                 for (let i = 0; i < projectData.length; i++) {
                     console.log(projectData[i]);
                     let color = VersionsMeasuresHistoryApp.getRandomColor();
+                    let debt_history = projectData[i].data.map((version) => {
+                        return version.arch_debt
+                    });
+                    let debt_history_array = [projectData[i].name];
+                    debt_history_array = debt_history_array.concat(debt_history);
+                    history.push(debt_history_array);
                     data.datasets.push({
                         label: projectData[i].name,
                         fill: false,
@@ -69,23 +84,30 @@ export default class VersionsMeasuresHistoryApp extends React.PureComponent {
                         pointHoverBorderWidth: 2,
                         pointRadius: 1,
                         pointHitRadius: 10,
-                        data: projectData[i].data.map((version) => {
-                                return version.arch_debt
-                            }
-                        )
+                        data: debt_history
                     });
                 }
                 this.setState({
                     data: data,
-                    options: options
+                    options: options,
+                    csvHistory: history
                 });
             }
         );
 
         findIssuesStatistics().then((issues) => {
             const rules = issues.facets[0].values;
-            const labels = rules.map((issue) => issue.val);
+            let labels = [];
+            let rulesInfo = issues.rules;
+            for (let i = 0; i < rules.length; i++) {
+                labels.push(rulesInfo.find((rule) => {
+                    return rule.key === rules[i].val;
+                }).name)
+            }
             const counts = rules.map((issue) => issue.count);
+            let csv = labels.map((label, i) => {
+                return [label, counts[i]];
+            });
             let backgroundColors = [];
             for (let i = 0; i < rules.length; i++) {
                 backgroundColors.push(VersionsMeasuresHistoryApp.getRandomColor())
@@ -98,17 +120,28 @@ export default class VersionsMeasuresHistoryApp extends React.PureComponent {
                 }]
             };
             this.setState({
-                issues: stats
+                issues: stats,
+                csvData: csv,
             });
         });
+
+        findProjectsNames().then((projectData) => {
+            this.setState({
+                projectData: projectData
+            })
+        })
     }
 
     render() {
         return (
             <div className="page page-limited">
                 <Doughnut data={this.state.issues}/>
+                {<CSVLink data={this.state.csvData} headers={headers} filename={"IssuesStatistics.csv"}>Download
+                    issues data for this period</CSVLink>}
                 <h1>Architectural debt in group assignments throughout the semester</h1>
                 <Line data={this.state.data} options={this.state.options}/>
+                {<CSVLink data={this.state.csvHistory} headers={headersHistory} filename={"GroupsDebtStatistics.csv"}>Download
+                    group data</CSVLink>}
             </div>
         );
     }

@@ -8,11 +8,18 @@ import {getJSON} from 'sonar-request'; // see https://github.com/SonarSource/son
 export function findIssuesStatistics(project) {
     return getJSON('/api/issues/search', {
         facets: 'rules',
-        tags:  'refactoring',
+        tags: 'refactoring',
         additionalFields: 'rules'
     }).then(function (response) {
         return response;
     });
+}
+
+export function findProjectsNames() {
+    return getJSON('/api/projects/search').then(function (response) {
+            return response.components;
+        }
+    );
 }
 
 
