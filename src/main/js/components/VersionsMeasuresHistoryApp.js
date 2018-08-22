@@ -17,6 +17,7 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
+            colors: [],
             options: {},
             issues: {},
             data: [],
@@ -28,24 +29,16 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
             courseList: [],
             semesterList: [],
             sectionList: [],
-            courseFilter: '',
+            courseFilter: [],
             semesterStartFilter: '0',
             semesterEndFilter: '9999',
             sectionFilter: ''
         };
     }
 
-    static getRandomColor() {
-        const letters = '0123456789ABCDEF'.split('');
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
     renderHistory() {
 
+        console.log("render" + this.state.courseList);
         console.log('render');
         let data = {
             labels: ['Entrega 1', 'Entrega 2', 'Entrega 3'],
@@ -70,7 +63,7 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         let history = [];
         for (let i = 0; i < this.state.projectDataFiltered.length; i++) {
             console.log(this.state.projectDataFiltered[i]);
-            let color = VersionsMeasuresHistoryApp.getRandomColor();
+            let color = this.props.colors[i];
             let debt_history = this.state.projectDataFiltered[i].data.map((version) => {
                 return version.arch_debt
             });
@@ -104,16 +97,14 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
             options: options,
             csvHistory: history
         });
-
+        console.log("render" + this.state.courseList);
         console.log('finish render');
-    }
-
-    componentDidUpdate() {
-
     }
 
     componentDidMount() {
 
+
+        console.log("mount" + this.state.courseList);
         console.log('mounted');
         console.log(this.state.projectDataFiltered);
         this.renderHistory();
@@ -133,7 +124,7 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
             });
             let backgroundColors = [];
             for (let i = 0; i < rules.length; i++) {
-                backgroundColors.push(VersionsMeasuresHistoryApp.getRandomColor())
+                backgroundColors.push(this.props.colors[i])
             }
             let stats = {
                 labels: labels,
@@ -154,49 +145,88 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
             courses = courses.filter((course, index, array) => array.indexOf(course) === index);
             let semesters = projectNames.map((name) => name.substr(9, 14));
             semesters = semesters.filter((semester, index, array) => array.indexOf(semester) === index);
-            let sections = projectNames.map((name) => name.substr(16, 16));
+            let sections = projectNames.map((name) => name.substr(16, 17));
             sections = sections.filter((section, index, array) => array.indexOf(section) === index);
             this.setState({
                 courseList: courses,
                 projectNames: projectNames,
                 semesterList: semesters,
-                sectionList: sections
+                sectionList: sections,
+                courseFilter: courses,
+                sectionFilter: sections
             })
-        })
-    }
-
-    filterBySemester() {
-        const newData = this.props.projectData.filter((project) => {
-            let sem = project.name.substr(9, 14);
-            return sem >= this.state.semesterStartFilter && sem <= this.state.semesterEndFilter;
         });
-        this.setState({projectDataFiltered: newData}, this.renderHistory);
-    }
 
+        console.log("mount" + this.state.courseList);
+    }
 
     handleFilterBySemester(event) {
         if (event.target.name === 'selectSemesterStart') {
-            this.setState({semesterStartFilter: event.target.value}, this.filterBySemester);
+            this.setState({semesterStartFilter: event.target.value}, this.filter);
         } else {
-            this.setState({semesterEndFilter: event.target.value}, this.filterBySemester);
+            this.setState({semesterEndFilter: event.target.value}, this.filter);
         }
+    }
+
+    handleFilterByCourse(event) {
+        console.log("HFILTER" + this.state.courseList);
+        if (event.target.checked) {
+            const newCourse = event.target.value;
+            this.setState({courseFilter: [...this.state.courseFilter, newCourse]}, this.filter);
+        } else {
+            const courseToRemove = event.target.value;
+            let courseCopy = this.state.courseFilter.slice();
+            courseCopy.splice(courseCopy.indexOf(courseToRemove), 1);
+            console.log(this.state.courseList);
+            this.setState({courseFilter: courseCopy}, this.filter);
+            console.log("HFILTER" + this.state.courseList);
+        }
+    }
+
+    handleFilterBySection(event) {
+        if (event.target.checked) {
+            const newSection = event.target.value;
+            this.setState({sectionFilter: [...this.state.sectionFilter, newSection]}, this.filter);
+        } else {
+            const sectionToRemove = event.target.value;
+            let sectionCopy = this.state.sectionFilter.slice();
+            sectionCopy.splice(sectionCopy.indexOf(sectionToRemove), 1);
+            this.setState({sectionFilter: sectionCopy}, this.filter);
+        }
+    }
+
+    filter() {
+        let names = this.state.projectNames.filter(name => {
+            return this.state.courseFilter.includes(name.substr(0, 7));
+        }, this);
+        names = names.filter(name => {
+            let sem = name.substr(9, 14);
+            return sem >= this.state.semesterStartFilter && sem <= this.state.semesterEndFilter;
+        }, this);
+        /*names = names.filter(name => {
+            this.state.sectionFilter.includes(name.substr(16, 17))
+        }, this);
+*/
+        const newData = this.props.projectData.filter(project => names.includes(project.name)
+        );
+
+        this.setState({projectDataFiltered: newData}, this.renderHistory);
     }
 
     render() {
         return (
             <div className="page page-limited">
+                <h3>Courses</h3>
                 {this.state.courseList.map((course, i) =>
                     <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="checkbox" id={'inlineCheckbox' + i} value={course}/>
+                        <input className="form-check-input" type="checkbox"
+                               checked={this.state.courseFilter.includes(course)} id={'inlineCheckbox' + i}
+                               value={course}
+                               onClick={(event) => this.handleFilterByCourse(event)}/>
                         <label className="form-check-label" htmlFor={'inlineCheckbox' + i}>{course}</label>
                     </div>
                 )}
-                {this.state.sectionList.map((section, i) =>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="checkbox" id={'inlineCheckbox' + i} value={section}/>
-                        <label className="form-check-label" htmlFor={'inlineCheckbox' + i}>{section}</label>
-                    </div>
-                )}
+                <h3>Semesters</h3>
                 <select id="selectSemesterStart" name="selectSemesterStart"
                         onChange={(event) => this.handleFilterBySemester(event)}>
                     <option selected disabled>Start semester</option>
@@ -211,13 +241,23 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                         <option>{semester}</option>
                     )}
                 </select>
-                <Doughnut data={this.state.issues}/>
-                {<CSVLink data={this.state.csvData} headers={headers} filename={"IssuesStatistics.csv"}>Download
-                    issues data for this period</CSVLink>}
+                <h3>Sections</h3>
+                {this.state.sectionList.map((section, i) =>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="checkbox"
+                               checked={this.state.sectionFilter.includes(section)} id={'inlineCheckbox' + i}
+                               value={section}
+                               onClick={(event) => this.handleFilterBySection(event)}/>
+                        <label className="form-check-label" htmlFor={'inlineCheckbox' + i}>{section}</label>
+                    </div>
+                )}
                 <h1>Architectural debt in group assignments throughout the semester</h1>
                 <Line data={this.state.data} options={this.state.options}/>
                 {<CSVLink data={this.state.csvHistory} headers={headersHistory} filename={"GroupsDebtStatistics.csv"}>Download
                     group data</CSVLink>}
+                <Doughnut data={this.state.issues}/>
+                {<CSVLink data={this.state.csvData} headers={headers} filename={"IssuesStatistics.csv"}>Download
+                    issues data for this period</CSVLink>}
             </div>
         );
     }
