@@ -5,3 +5,8 @@
 .form-check-inline {
   display: inline-flex;
 }
+
+.semester-select {
+  width: 20%;
+  float: left;
+}

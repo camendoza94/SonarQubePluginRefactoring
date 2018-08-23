@@ -6,11 +6,8 @@
 import React from 'react';
 import {findIssuesStatistics, findProjectsNames} from '../api.js'
 import {Line, Doughnut} from 'react-chartjs-2';
-import {CSVLink} from 'react-csv';
+import Select from 'react-select';
 
-
-const headers = ['rule', 'number of issues'];
-const headersHistory = ['group', 'first assignment', 'second assignment', 'third assignment'];
 
 class VersionsMeasuresHistoryApp extends React.PureComponent {
 
@@ -34,6 +31,10 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
             semesterEndFilter: '9999',
             sectionFilter: ''
         };
+
+        this.handleFilterByCourse = this.handleFilterByCourse.bind(this);
+        this.handleFilterBySemesterEnd = this.handleFilterBySemesterEnd.bind(this);
+        this.handleFilterBySemesterStart = this.handleFilterBySemesterStart.bind(this);
     }
 
     renderHistory() {
@@ -160,39 +161,20 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         console.log("mount" + this.state.courseList);
     }
 
-    handleFilterBySemester(event) {
-        if (event.target.name === 'selectSemesterStart') {
-            this.setState({semesterStartFilter: event.target.value}, this.filter);
-        } else {
-            this.setState({semesterEndFilter: event.target.value}, this.filter);
-        }
+    handleFilterBySemesterStart(event) {
+        this.setState({semesterStartFilter: event.value}, this.filter);
     }
 
-    handleFilterByCourse(event) {
-        console.log("HFILTER" + this.state.courseList);
-        if (event.target.checked) {
-            const newCourse = event.target.value;
-            this.setState({courseFilter: [...this.state.courseFilter, newCourse]}, this.filter);
-        } else {
-            const courseToRemove = event.target.value;
-            let courseCopy = this.state.courseFilter.slice();
-            courseCopy.splice(courseCopy.indexOf(courseToRemove), 1);
-            console.log(this.state.courseList);
-            this.setState({courseFilter: courseCopy}, this.filter);
-            console.log("HFILTER" + this.state.courseList);
-        }
+    handleFilterBySemesterEnd(event) {
+        this.setState({semesterEndFilter: event.value}, this.filter);
     }
 
-    handleFilterBySection(event) {
-        if (event.target.checked) {
-            const newSection = event.target.value;
-            this.setState({sectionFilter: [...this.state.sectionFilter, newSection]}, this.filter);
-        } else {
-            const sectionToRemove = event.target.value;
-            let sectionCopy = this.state.sectionFilter.slice();
-            sectionCopy.splice(sectionCopy.indexOf(sectionToRemove), 1);
-            this.setState({sectionFilter: sectionCopy}, this.filter);
-        }
+    handleFilterByCourse(inputValue) {
+        this.setState({courseFilter: inputValue.map((array) => array.value)}, this.filter);
+    }
+
+    handleFilterBySection(inputValue) {
+        this.setState({sectionFilter: inputValue.map((array) => array.value)}, this.filter);
     }
 
     filter() {
@@ -206,58 +188,75 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         /*names = names.filter(name => {
             this.state.sectionFilter.includes(name.substr(16, 17))
         }, this);
-*/
+    */
         const newData = this.props.projectData.filter(project => names.includes(project.name)
         );
 
         this.setState({projectDataFiltered: newData}, this.renderHistory);
     }
 
+    courseListFormatter() {
+        return this.state.courseList.map(course => {
+            return {'value': course, 'label': course}
+        })
+    }
+
+    courseFilterFormatter() {
+        return this.state.courseFilter.map(course => {
+            return {'value': course, 'label': course}
+        })
+    }
+
+    sectionListFormatter() {
+        return this.state.sectionList.map(section => {
+            return {'value': section, 'label': section}
+        })
+    }
+
     render() {
         return (
             <div className="page page-limited">
                 <h3>Courses</h3>
-                {this.state.courseList.map((course, i) =>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="checkbox"
-                               checked={this.state.courseFilter.includes(course)} id={'inlineCheckbox' + i}
-                               value={course}
-                               onClick={(event) => this.handleFilterByCourse(event)}/>
-                        <label className="form-check-label" htmlFor={'inlineCheckbox' + i}>{course}</label>
-                    </div>
-                )}
+                <Select
+                    isMulti
+                    value={this.courseFilterFormatter()}
+                    name="courses"
+                    options={this.courseListFormatter()}
+                    onChange={this.handleFilterByCourse}
+                    placeholder="Select courses"
+                />
                 <h3>Semesters</h3>
-                <select id="selectSemesterStart" name="selectSemesterStart"
-                        onChange={(event) => this.handleFilterBySemester(event)}>
-                    <option selected disabled>Start semester</option>
-                    {this.state.semesterList.map((semester) =>
-                        <option>{semester}</option>
-                    )}
-                </select>
-                <select id="selectSemesterEnd" name="selectSemesterEnd"
-                        onChange={(event) => this.handleFilterBySemester(event)}>
-                    <option selected disabled>End semester</option>
-                    {this.state.semesterList.map((semester) =>
-                        <option>{semester}</option>
-                    )}
-                </select>
+                <Select
+                    name="semesterStart"
+                    options={this.state.semesterList.map(semester => {
+                        return {'value': semester, 'label': semester}
+                    })}
+                    onChange={this.handleFilterBySemesterStart}
+                    className="semester-select"
+                    placeholder="Select start semester"
+                />
+                <Select
+                    name="semesterEnd"
+                    options={this.state.semesterList.map(semester => {
+                        return {'value': semester, 'label': semester}
+                    })}
+                    onChange={this.handleFilterBySemesterEnd}
+                    className="semester-select"
+                    placeholder="Select end semester"
+                />
+                <br/>
+                <br/>
+                <br/>
                 <h3>Sections</h3>
-                {this.state.sectionList.map((section, i) =>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="checkbox"
-                               checked={this.state.sectionFilter.includes(section)} id={'inlineCheckbox' + i}
-                               value={section}
-                               onClick={(event) => this.handleFilterBySection(event)}/>
-                        <label className="form-check-label" htmlFor={'inlineCheckbox' + i}>{section}</label>
-                    </div>
-                )}
+                <Select
+                    name="sections"
+                    options={this.sectionListFormatter()}
+                    onChange={this.handleFilterBySection}
+                    placeholder="Select section"
+                />
                 <h1>Architectural debt in group assignments throughout the semester</h1>
                 <Line data={this.state.data} options={this.state.options}/>
-                {<CSVLink data={this.state.csvHistory} headers={headersHistory} filename={"GroupsDebtStatistics.csv"}>Download
-                    group data</CSVLink>}
                 <Doughnut data={this.state.issues}/>
-                {<CSVLink data={this.state.csvData} headers={headers} filename={"IssuesStatistics.csv"}>Download
-                    issues data for this period</CSVLink>}
             </div>
         );
     }
