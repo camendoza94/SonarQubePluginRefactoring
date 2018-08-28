@@ -35,12 +35,10 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         this.handleFilterByCourse = this.handleFilterByCourse.bind(this);
         this.handleFilterBySemesterEnd = this.handleFilterBySemesterEnd.bind(this);
         this.handleFilterBySemesterStart = this.handleFilterBySemesterStart.bind(this);
+        this.handleFilterBySection = this.handleFilterBySection.bind(this);
     }
 
     renderHistory() {
-
-        console.log("render" + this.state.courseList);
-        console.log('render');
         let data = {
             labels: ['Entrega 1', 'Entrega 2', 'Entrega 3'],
             datasets: []
@@ -63,7 +61,6 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         };
         let history = [];
         for (let i = 0; i < this.state.projectDataFiltered.length; i++) {
-            console.log(this.state.projectDataFiltered[i]);
             let color = this.props.colors[i];
             let debt_history = this.state.projectDataFiltered[i].data.map((version) => {
                 return version.arch_debt
@@ -98,16 +95,9 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
             options: options,
             csvHistory: history
         });
-        console.log("render" + this.state.courseList);
-        console.log('finish render');
     }
 
     componentDidMount() {
-
-
-        console.log("mount" + this.state.courseList);
-        console.log('mounted');
-        console.log(this.state.projectDataFiltered);
         this.renderHistory();
 
         findIssuesStatistics().then((issues) => {
@@ -142,11 +132,11 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
 
         findProjectsNames().then((projectData) => {
             const projectNames = projectData.map((project) => project.name);
-            let courses = projectNames.map((name) => name.substr(0, 7));
+            let courses = projectNames.map((name) => name.substr(0, 8));
             courses = courses.filter((course, index, array) => array.indexOf(course) === index);
-            let semesters = projectNames.map((name) => name.substr(9, 14));
+            let semesters = projectNames.map((name) => name.substr(9, 6));
             semesters = semesters.filter((semester, index, array) => array.indexOf(semester) === index);
-            let sections = projectNames.map((name) => name.substr(16, 17));
+            let sections = projectNames.map((name) => name.substr(16, 2));
             sections = sections.filter((section, index, array) => array.indexOf(section) === index);
             this.setState({
                 courseList: courses,
@@ -157,8 +147,6 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                 sectionFilter: sections
             })
         });
-
-        console.log("mount" + this.state.courseList);
     }
 
     handleFilterBySemesterStart(event) {
@@ -174,21 +162,21 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
     }
 
     handleFilterBySection(inputValue) {
-        this.setState({sectionFilter: inputValue.map((array) => array.value)}, this.filter);
+        this.setState({sectionFilter: inputValue.value}, this.filter);
     }
 
     filter() {
         let names = this.state.projectNames.filter(name => {
-            return this.state.courseFilter.includes(name.substr(0, 7));
+            return this.state.courseFilter.includes(name.substr(0, 8));
         }, this);
         names = names.filter(name => {
-            let sem = name.substr(9, 14);
-            return sem >= this.state.semesterStartFilter && sem <= this.state.semesterEndFilter;
+            let sem = parseInt(name.substr(9, 6));
+            return sem >= parseInt(this.state.semesterStartFilter) && sem <= parseInt(this.state.semesterEndFilter);
         }, this);
-        /*names = names.filter(name => {
-            this.state.sectionFilter.includes(name.substr(16, 17))
+        names = names.filter(name => {
+            return this.state.sectionFilter.includes(name.substr(16, 2))
         }, this);
-    */
+
         const newData = this.props.projectData.filter(project => names.includes(project.name)
         );
 
