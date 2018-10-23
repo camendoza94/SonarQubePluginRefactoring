@@ -15,6 +15,13 @@ export function findIssuesStatistics(project) {
     });
 }
 
+export function findIssuesHistory() {
+    return getJSON('http://localhost:5000/issues_log').then((response) => {
+        console.log(response);
+        return response
+    })
+}
+
 export function findProjectsNames() {
     return getJSON('/api/projects/search').then(function (response) {
             return response.components;

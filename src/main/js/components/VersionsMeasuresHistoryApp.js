@@ -4,7 +4,7 @@
  * mailto:info AT sonarsource DOT com
  */
 import React from 'react';
-import {findIssuesStatistics, findProjectsNames} from '../api.js'
+import {findIssuesStatistics, findProjectsNames, findIssuesHistory} from '../api.js'
 import {Line, Doughnut} from 'react-chartjs-2';
 import Select from 'react-select';
 
@@ -18,9 +18,13 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
             options: {},
             issues: {},
             data: [],
+            dataIssues: [],
+            optionsIssues: {},
             csvData: [],
             csvHistory: [],
-            projectData: [],
+            issuesData: [],
+            issuesLabels: [],
+            issuesHistory: [],
             projectNames: [],
             projectDataFiltered: this.props.projectData,
             courseList: [],
@@ -40,7 +44,7 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
 
     renderHistory() {
         let data = {
-            labels: ['Entrega 1', 'Entrega 2', 'Entrega 3'],
+            labels: ['Release 1', 'Release 2', 'Release 3'],
             datasets: []
         };
         const options = {
@@ -97,8 +101,86 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         });
     }
 
+    renderIssuesHistory() {
+        let data = {
+            labels: this.state.issuesLabels,
+            datasets: []
+        };
+        const options = {
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Number of violations'
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Programming assignments'
+                    }
+                }]
+            }
+        };
+        let i = 0;
+        this.state.issuesHistory.forEach((value, key) => {
+            let color = this.props.colors[i];
+            data.datasets.push({
+                label: key,
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: color,
+                borderColor: color,
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: color,
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: color,
+                pointHoverBorderColor: 'rgba(220,220,220,1)',
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: value
+            });
+            i++;
+        });
+        console.log(data);
+        console.log(this.state);
+        this.setState({
+            dataIssues: data,
+            optionsIssues: options
+        });
+    }
+
     componentDidMount() {
         this.renderHistory();
+        findIssuesHistory().then((response) => {
+            this.setState({issuesData: response._items});
+            let map_issues = new Map();
+            let labels = [];
+            response._items.forEach((issues) => {
+                let rules = issues.facets[0].values;
+                let rulesInfo = issues.rules;
+                labels.push(issues.date);
+                rules.forEach(rule => {
+                    let key = rulesInfo.find((r) => {
+                        return r.key === rule.val;
+                    }).name;
+                    let value = rule.count;
+                    let prev_value = map_issues.get(key);
+                    if (prev_value) {
+                        map_issues.set(key, [...prev_value, value])
+                    } else {
+                        map_issues.set(key, [value])
+                    }
+                })
+            });
+            this.setState({issuesHistory: map_issues, issuesLabels: labels}, this.renderIssuesHistory)
+        });
 
         findIssuesStatistics().then((issues) => {
             const rules = issues.facets[0].values;
@@ -242,12 +324,20 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                     onChange={this.handleFilterBySection}
                     placeholder="Select section"
                 />
-                <h1>Architectural debt in group assignments throughout the semester</h1>
+                <br/>
+                <h1>Architectural debt in group assignments</h1>
                 <Line data={this.state.data} options={this.state.options}/>
+                <br/>
+                <h1>Most common violations throughout the semester</h1>
+                <Line data={this.state.dataIssues} options={this.state.optionsIssues}/>
+                <br/>
+                <h1>Most common violations in latest release</h1>
                 <Doughnut data={this.state.issues}/>
             </div>
         );
     }
+
+
 }
 
 export default VersionsMeasuresHistoryApp;
