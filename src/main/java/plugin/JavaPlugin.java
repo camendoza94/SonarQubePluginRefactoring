@@ -18,11 +18,7 @@ package plugin;/*
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import measures.CoverageComputer;
-import measures.CoverageMetrics;
 import org.sonar.api.Plugin;
-import rules.JavaFileCheckRegistrar;
-import rules.JavaRulesDefinition;
 import web.PluginPageDefinition;
 
 /**
@@ -32,9 +28,6 @@ public class JavaPlugin implements Plugin {
 
     @Override
     public void define(Context context) {
-        context.addExtension(JavaRulesDefinition.class);
-        context.addExtension(JavaFileCheckRegistrar.class);
-        context.addExtensions(CoverageComputer.class, CoverageMetrics.class);
         context.addExtension(PluginPageDefinition.class);
     }
 }

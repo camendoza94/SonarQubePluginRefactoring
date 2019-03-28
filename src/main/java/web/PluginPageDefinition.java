@@ -12,6 +12,6 @@ public class PluginPageDefinition implements PageDefinition {
     context
       .addPage(Page.builder("refactoring/architecture")
         .setName("Architectural review")
-        .setScope(Scope.GLOBAL).build());
+        .setScope(Scope.COMPONENT).build());
   }
 }

@@ -15,7 +15,7 @@
         <sslr.version>1.21</sslr.version>
         <gson.version>2.6.2</gson.version>
 
-        <sonar.version>7.1</sonar.version>
+        <sonar.version>6.7.6</sonar.version>
         <sonar.sources>src/main/java,src/main/js</sonar.sources>
         <sonarjava.version>5.3.0.13828</sonarjava.version>
     </properties>
@@ -133,7 +133,7 @@
             <plugin>
                 <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
                 <artifactId>sonar-packaging-maven-plugin</artifactId>
-                <version>1.17</version>
+                <version>1.18.0.372</version>
                 <extensions>true</extensions>
                 <configuration>
                     <pluginKey>refactoring</pluginKey>
