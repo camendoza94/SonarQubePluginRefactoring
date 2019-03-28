@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import VersionsMeasuresHistoryApp from "./VersionsMeasuresHistoryApp";
-import { rgbColors, getProjectsLOC, getStored } from "../api";
+import { rgbColors, getProjectsLOC, getStored, getKeys } from "../api";
 
 class App extends Component {
 
@@ -24,12 +24,17 @@ class App extends Component {
         projectLOC: response
       });
     });
+    getKeys().then(response => {
+      const mapping = response.find((mapping) => mapping.key === this.props.project.key);
+      this.setState({projectName: mapping.name})
+    })
   }
 
   render() {
     const data = this.state.projectData;
     const projectLOC = this.state.projectLOC;
     const loading = this.state.loading;
+    const projectName = this.state.projectName;
     return (
       <div className="App container">
         {loading ?
@@ -39,9 +44,9 @@ class App extends Component {
           </div>
           : ""
         }
-        {data && projectLOC && !loading ?
+        {data && projectLOC && !loading && projectName ?
           <VersionsMeasuresHistoryApp
-            projectData={data}
+            projectData={data.filter((project) => project.name === projectName)}
             projectLOC={projectLOC}
             colors={rgbColors(20)}
           /> : ""

@@ -77,13 +77,6 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                 }).length;
             }
         }
-        let countsLOC = [];
-        for (let i = 0; i < this.state.projectDataFiltered.length; i++) {
-            let projects = this.props.projectLOC.filter((data) => {
-                return data.name === this.state.projectNames[i];
-            });
-            countsLOC[i] = (projects[0] ? projects[0].locs[projects[0].locs.length - 1] : 0);
-        }
         this.setState({
             groupStats: counts,
             rulesCount: rulesCounts

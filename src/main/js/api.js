@@ -17,6 +17,12 @@ export function getStored() {
   });
 }
 
+export function getKeys() {
+  return getJSON("https://archtoringbd.herokuapp.com/keys").then(response => {
+    return response;
+  });
+}
+
 export function rgbColors(t) {
   t = parseInt(t);
   if (t < 2)
