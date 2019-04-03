@@ -5,13 +5,13 @@ import App from "./components/App";
 
 window.registerExtension('refactoring/architecture', options => {
 
-  const { el } = options;
+    const {el} = options;
 
-  render(
-    <App
-      project={options.component}
-    />, el
-  );
+    render(
+        <App
+            project={options.component}
+        />, el
+    );
 
     return () => unmountComponentAtNode(el);
 });

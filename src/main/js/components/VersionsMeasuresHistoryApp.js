@@ -44,15 +44,26 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         this.rules.push("Resource GET methods must return DetailDTOs so their info is properly displayed");
         this.rules.push("Getters and setters on DTOs must manage serializable types only");
 
-        this.lastReview = 4;
-
         this.handleFilterBySection = this.handleFilterBySection.bind(this);
     }
 
     componentDidMount() {
-        this.renderHistory();
-        this.renderIssues();
-        this.renderIssuesHistory();
+        let lastReviews = this.props.projectData.map((project) => {
+            let data = {};
+            data.name = project.name;
+            let namesArray = project.data.map((issue) => {
+                let lbl = issue.labels.filter(l => l.name.startsWith("C")).map(l => l.name.substring(1));
+                return lbl ? Math.max(...lbl) : 0;
+            });
+            let setNames = new Set(namesArray);
+            data.lastReview = Math.max(...setNames);
+            return data;
+        });
+        this.setState({lastReviews}, () => {
+            this.renderHistory();
+            this.renderIssues();
+            this.renderIssuesHistory();
+        });
         const projectNames = this.props.projectData.map((project) => project.name);
         let sections = projectNames.map((name) => name.substr(0, 2));
         sections = sections.filter((section, index, array) => array.indexOf(section) === index);
@@ -68,12 +79,12 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         let rulesCounts = [];
         for (let i = 0; i < this.state.projectDataFiltered.length; i++) {
             counts[i] = this.state.projectDataFiltered[i].data.filter((issue) => {
-                return issue.labels.map(l => l.name).includes("C" + this.lastReview)
+                return issue.labels.map(l => l.name).includes("C" + this.state.lastReviews.find(l => l.name === this.state.projectDataFiltered[i].name).lastReview)
             }).length;
             rulesCounts[i] = [];
             for (let j = 0; j < this.rules.length; j++) {
                 rulesCounts[i][j] = this.state.projectDataFiltered[i].data.filter((issue) => {
-                    return issue.labels.map(l => l.name).includes("C" + this.lastReview) && issue.labels.map(l => l.name).includes("R" + (j + 1));
+                    return issue.labels.map(l => l.name).includes("C" + this.state.lastReviews.find(l => l.name === this.state.projectDataFiltered[i].name).lastReview) && issue.labels.map(l => l.name).includes("R" + (j + 1));
                 }).length;
             }
         }
@@ -86,12 +97,8 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
 
     renderIssuesHistory() {
         let data = {
-            labels: [],
             datasets: []
         };
-        for (let i = 0; i < this.lastReview; i++) {
-            data.labels.push("Release " + (i + 1))
-        }
         const options = {
             responsive: true,
             tooltips: {
@@ -113,13 +120,18 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                     scaleLabel: {
                         display: true,
                         labelString: 'Programming assignments'
+                    },
+                    type: 'time',
+                    distribution: 'linear',
+                    time: {
+                        unit: 'week'
                     }
                 }]
             }
         };
         let counts = [];
         for (let i = 0; i < this.state.projectDataFiltered.length; i++) {
-            for (let k = 1; k <= this.lastReview; k++) {
+            for (let k = 1; k <= this.state.lastReviews.find(l => l.name === this.state.projectDataFiltered[i].name).lastReview; k++) {
                 for (let j = 0; j < this.rules.length; j++) {
                     counts[j] = counts[j] ? counts[j] : new Array(this.lastReview).fill(0);
                     counts[j][k - 1] += this.state.projectDataFiltered[i].data.filter((issue) => {
@@ -161,11 +173,11 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
     }
 
     renderIssues() {
-        let counts = new Array(20).fill(0);
+        let counts = new Array(this.rules.length).fill(0);
         for (let i = 0; i < this.state.projectDataFiltered.length; i++) {
             for (let j = 0; j < this.rules.length; j++) {
                 counts[j] += this.state.projectDataFiltered[i].data.filter((issue) => {
-                    return issue.labels.map(l => l.name).includes("R" + (j + 1)) && issue.labels.map(l => l.name).includes("C" + this.lastReview)
+                    return issue.labels.map(l => l.name).includes("R" + (j + 1)) && issue.labels.map(l => l.name).includes("C" + this.state.lastReviews.find(l => l.name === this.state.projectDataFiltered[i].name).lastReview)
                 }).length
             }
         }
@@ -187,12 +199,8 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
 
     renderHistory() {
         let data = {
-            labels: [],
             datasets: []
         };
-        for (let i = 0; i < this.lastReview; i++) {
-            data.labels.push("Release " + (i + 1))
-        }
         const options = {
             scales: {
                 yAxes: [{
@@ -205,6 +213,11 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                     scaleLabel: {
                         display: true,
                         labelString: 'Programming assignments'
+                    },
+                    type: 'time',
+                    distribution: 'linear',
+                    time: {
+                        unit: 'week'
                     }
                 }]
             }
@@ -212,7 +225,8 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
         for (let i = 0; i < this.state.projectDataFiltered.length; i++) {
             let color = this.props.colors[i];
             let dataHistory = [];
-            for (let j = 1; j <= this.lastReview; j++) {
+            //Issues in every commit
+            for (let j = 1; j <= this.state.lastReviews.find(l => l.name === this.state.projectDataFiltered[i].name).lastReview; j++) {
                 dataHistory[j - 1] = this.state.projectDataFiltered[i].data.filter((issue) => {
                     return issue.labels.map(i => i.name).includes("C" + j)
                 }).length
@@ -221,8 +235,12 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                 return data.name === this.state.projectDataFiltered[i].name;
             });
             let countsLOC = (projects[0] ? projects[0].locs : new Array(this.lastReview).fill(0));
-            let result = dataHistory.map((n, i) => (n / countsLOC[i]) * 1000);
-            data.datasets.push({
+            let result = dataHistory.map((n, index) => {
+                return {
+                    x: new Date(this.props.commitsDates.find((p) => p.name === this.state.projectDataFiltered[i].name).dates[index]),
+                    y: (n / countsLOC[index]) * 1000
+                }
+            });            data.datasets.push({
                 label: this.state.projectDataFiltered[i].name,
                 fill: false,
                 lineTension: 0,
