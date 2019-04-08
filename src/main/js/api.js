@@ -23,12 +23,6 @@ export function getKeys() {
     });
 }
 
-export function getDates() {
-    return getJSON("https://archtoringbd.herokuapp.com/dates").then(response => {
-        return response;
-    });
-}
-
 export function rgbColors(t) {
     t = parseInt(t);
     if (t < 2)

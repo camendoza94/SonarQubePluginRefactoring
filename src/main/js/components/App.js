@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import "./App.css";
 import VersionsMeasuresHistoryApp from "./VersionsMeasuresHistoryApp";
-import {rgbColors, getProjectsLOC, getStored, getKeys, getDates} from "../api";
+import {rgbColors, getProjectsLOC, getStored, getKeys} from "../api";
 
 class App extends Component {
 
@@ -28,11 +28,6 @@ class App extends Component {
             const mapping = response.find((mapping) => mapping.key === this.props.project.key);
             this.setState({projectName: mapping.name})
         });
-        getDates().then(response => {
-            this.setState({
-                commitsDates: response
-            })
-        })
     }
 
     render() {
@@ -40,7 +35,6 @@ class App extends Component {
         const projectLOC = this.state.projectLOC;
         const loading = this.state.loading;
         const projectName = this.state.projectName;
-        const commitsDates = this.state.commitsDates;
         return (
             <div className="App container">
                 {loading ?
@@ -50,9 +44,8 @@ class App extends Component {
                     </div>
                     : ""
                 }
-                {data && projectLOC && !loading && projectName && commitsDates ?
+                {data && projectLOC && !loading && projectName ?
                     <VersionsMeasuresHistoryApp
-                        commitsDates={commitsDates}
                         projectData={data.filter((project) => project.name === projectName)}
                         projectLOC={projectLOC}
                         colors={rgbColors(20)}

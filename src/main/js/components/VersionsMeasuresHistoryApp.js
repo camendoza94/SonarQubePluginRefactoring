@@ -97,8 +97,12 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
 
     renderIssuesHistory() {
         let data = {
+            labels: [],
             datasets: []
         };
+        for (let i = 0; i < this.state.lastReviews.find(l => l.name === this.state.projectDataFiltered[0].name).lastReview; i++) {
+            data.labels.push("Release " + (i + 1))
+        }
         const options = {
             responsive: true,
             tooltips: {
@@ -120,11 +124,6 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                     scaleLabel: {
                         display: true,
                         labelString: 'Programming assignments'
-                    },
-                    type: 'time',
-                    distribution: 'linear',
-                    time: {
-                        unit: 'week'
                     }
                 }]
             }
@@ -199,8 +198,12 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
 
     renderHistory() {
         let data = {
+            labels: [],
             datasets: []
         };
+        for (let i = 0; i < this.state.lastReviews.find(l => l.name === this.state.projectDataFiltered[0].name).lastReview; i++) {
+            data.labels.push("Release " + (i + 1))
+        }
         const options = {
             scales: {
                 yAxes: [{
@@ -213,11 +216,6 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                     scaleLabel: {
                         display: true,
                         labelString: 'Programming assignments'
-                    },
-                    type: 'time',
-                    distribution: 'linear',
-                    time: {
-                        unit: 'week'
                     }
                 }]
             }
@@ -235,12 +233,9 @@ class VersionsMeasuresHistoryApp extends React.PureComponent {
                 return data.name === this.state.projectDataFiltered[i].name;
             });
             let countsLOC = (projects[0] ? projects[0].locs : new Array(this.lastReview).fill(0));
-            let result = dataHistory.map((n, index) => {
-                return {
-                    x: new Date(this.props.commitsDates.find((p) => p.name === this.state.projectDataFiltered[i].name).dates[index]),
-                    y: (n / countsLOC[index]) * 1000
-                }
-            });            data.datasets.push({
+            let result = dataHistory.map((n, i) => (n / countsLOC[i]) * 1000);
+
+            data.datasets.push({
                 label: this.state.projectDataFiltered[i].name,
                 fill: false,
                 lineTension: 0,
